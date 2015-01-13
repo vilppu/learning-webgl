@@ -1,0 +1,21 @@
+{
+  "name": "learning-webgl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "browserify -d  -t 6to5ify -r ./src/application.js:application > lib/bundle.js",
+    "minimize": "uglifyjs lib/bundle.js -c -m > lib/bundle.min.js",
+    "build": "npm run bundle",
+    "serve": "http-server -p 20500 ./"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "6to5ify": "latest",
+    "browserify": "latest",
+    "http-server": "latest",
+    "uglify-js": "latest"
+  }
+}
