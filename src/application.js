@@ -1,35 +1,38 @@
-import  { getWebGLContextOf } from './gl-context'
-import  { setupViewPortOf, clearViewPortOf,  } from './gl-camera'
-import  { render  } from './gl-renderable'
+import  { getWebGLRenderingContextOf } from './gl-context';
+import  { setupViewPortOf, clearViewPortOf,  } from './gl-camera';
+import  { getTriangleMeshFrom, render  } from './gl-triangle-mesh';
+
 
 export const startOn = (canvas) => {
 
-    const resizeCanvasToFitWindow = () => {
-        canvas.width=window.innerWidth;
-        canvas.height=window.innerHeight;
-    }
-
-    const triangleVertives = [
+    const triangleVertices = [
         0.0,  1.0,  0.0,
         -1.0, -1.0,  0.0,
         1.0, -1.0,  0.0
     ];
 
-    const triangle = {        
-        vertices: triangleVertives,
-        shaderNames: ["shader-fs", "shader-vs"]
-    }
+    const gl = getWebGLRenderingContextOf(canvas);
 
-    const gl = getWebGLContextOf(canvas);
+    const triangleSource = {        
+        vertices: triangleVertices,
+        shaderNames: ["shader-fs", "shader-vs"]
+    };
+
+    const triangle = getTriangleMeshFrom(triangleSource).using(gl);
+
+    const resizeCanvasToFitWindow = () => {
+        setupViewPortOf(gl);
+        canvas.width=window.innerWidth;
+        canvas.height=window.innerHeight;
+    };
 
     const animationLoop = () => {
         resizeCanvasToFitWindow();
 
-        setupViewPortOf(gl);
         clearViewPortOf(gl);
         render(triangle).to(gl);
         window.requestAnimationFrame(animationLoop);
-    }
+    };
 
     animationLoop();
-}
+};
