@@ -1,8 +1,18 @@
+/*
+    .vert vertex shader
+    .tesc tessellation control shader
+    .tese tessellation evaluation shader
+    .geom geometry shader
+    .frag fragment shader
+    .comp compute shader
+*/
+import { shaders } from '../lib/shaders.js';
+
 const validateThatShaderWasCompiledSuccessfully = (gl, shader, shaderName) => {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         var lastError = gl.getShaderInfoLog(shader);
         gl.deleteShader(shader);
-        throw "Failed to compile shader " + shaderName + ":" + lastError;
+        throw 'Failed to compile shader ' + shaderName + ':' + lastError;
     }
 };
 
@@ -10,20 +20,20 @@ const validateThatProgramWasLinkedSuccessfully = (gl, shaderProgram) => {
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         var lastError = gl.getProgramInfoLog(shaderProgram);
         gl.deleteProgram(shaderProgram);
-        throw "Failed to link shader program:" + lastError;
+        throw 'Failed to link shader program:' + lastError;
     }
 };
 
-const loadShaderFromElement = (elementId) => {
+const loadShaderFromLibrary = (shaderName) => {
     return {
         using: (gl) => {
-            const shaderScriptElement = document.getElementById(elementId);
-            const shaderType = shaderScriptElement.type === "x-shader/x-fragment" ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER;
+            const shaderSource = shaders[shaderName];
+            const shaderType = shaderName.indexOf('frag') !== -1 ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER;
             const shader = gl.createShader(shaderType);
 
-            gl.shaderSource(shader, shaderScriptElement.textContent);
+            gl.shaderSource(shader, shaderSource);
             gl.compileShader(shader);
-            validateThatShaderWasCompiledSuccessfully(gl, shader, elementId);
+            validateThatShaderWasCompiledSuccessfully(gl, shader, shaderName);
             
             return shader;
         }
@@ -35,7 +45,7 @@ const loadShader = (shaderName) => {
         to: (shaderProgram) =>{
             return {
                 using: (gl) => {
-                    var shader = loadShaderFromElement(shaderName).using(gl);
+                    var shader = loadShaderFromLibrary(shaderName).using(gl);
                     
                     gl.attachShader(shaderProgram, shader);
                     gl.deleteShader(shader);
@@ -75,11 +85,11 @@ export const loadShaderProgram = (shaderNames) => {
             validateThatProgramWasLinkedSuccessfully(gl, shaderProgram);
 
             gl.useProgram(shaderProgram);
-            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
             gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-            shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+            shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, 'uPMatrix');
+            shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, 'uMVMatrix');
 
             return shaderProgram;
         }

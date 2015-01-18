@@ -15,7 +15,7 @@ export const startOn = (canvas) => {
 
     const triangleSource = {        
         vertices: triangleVertices,
-        shaderNames: ["shader-fs", "shader-vs"]
+        shaderNames: ['default.frag', 'default.vert']
     };
 
     const triangle = getTriangleMeshFrom(triangleSource).using(gl);
